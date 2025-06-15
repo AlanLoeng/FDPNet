@@ -1,0 +1,59 @@
+
+# general settings
+name: FDP-ohaze-width16-test
+model_type: ImageRestorationModel
+scale: 1
+num_gpu: 1
+manual_seed: 10
+
+# dataset and data loader settings
+datasets:
+
+  val:
+    name: OHAZE_val
+    type: PairedImageDataset
+    dataroot_gt: ./datasets/O-HAZE/val/GT.lmdb
+    dataroot_lq: ./datasets/O-HAZE/val/hazy.lmdb
+    io_backend:
+      type: lmdb
+
+
+network_g:
+  type: FDP
+  width: 16
+  enc_blk_nums: [2, 2, 4, 8]
+  middle_blk_num: 12
+  dec_blk_nums: [2, 2, 2, 2]
+
+# network_g:
+#   type: Mod1
+#   width: 32
+#   enc_blk_nums: [1, 1, 2, 4]
+#   middle_blk_num: 6
+#   dec_blk_nums: [1, 1, 1, 1]
+#   dw_expand: 1
+#   ffn_expand: 2
+
+# path
+path:
+  pretrain_network_g: weights\FDPNet.pth
+  strict_load_g: true
+  resume_state: ~
+
+
+# validation settings
+val:
+  save_img: true
+  grids: false
+  use_image: false
+
+  metrics:
+    psnr: # metric name, can be arbitrary
+      type: calculate_psnr
+      crop_border: 0
+      test_y_channel: false
+    ssim:
+      type: calculate_ssim
+      crop_border: 0
+      test_y_channel: false
+
